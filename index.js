@@ -1,26 +1,19 @@
-const express = require('express');
-const app = express();
-const port = 3333;
-const conn = require("./db");
-const cors = require("cors");
-const { urlencoded } = require('body-parser');
-const cookieParser = require("cookie-parser")
+import { configureStore, createSlice } from "@reduxjs/toolkit";
 
-require("dotenv").config();
-
-conn.connection.on("connected", (err) => {
-    if (err) {
-        console.log(err);
-
-    } else {
-        console.log("database connected")
+const authSlice = createSlice({
+    name: "auth",
+    initialState: { isLoggedIn: false },
+    reducers: {
+        login(state) {
+            state.isLoggedIn = true
+        },
+        logout(state) {
+            state.isLoggedIn = false
+        }
     }
+});
+export const authActions = authSlice.actions;
 
+export const store = configureStore({
+    reducer: authSlice.reducer
 })
-
-app.use(express.json());
-app.use(urlencoded({ extended: true }));
-app.use(cors({ credentials: true, origin: "http://localhost:3000" }));
-app.use(cookieParser());
-app.use("/user", require("./routes/user"));
-app.listen(port, () => console.log("server start"));
